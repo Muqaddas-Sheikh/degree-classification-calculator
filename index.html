@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<meta name="description" content="Free UK degree classification calculator. Work out your weighted average, degree class (First, 2:1, 2:2, Third) and exactly what you need in your final year." />
+<link rel="icon" href="data:," />
+<title>UK Degree Classification Calculator — First, 2:1, 2:2 Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F7FB; --surface:#FFFFFF; --surface2:#EEF1F8; --surface3:#E6EAF4;
+  --ink:#0A0F2E; --ink2:#3D4560; --muted:#6B7390; --line:#DCE1EE;
+  --blue:#2F6BFF; --blue-dark:#1E4FD6; --blue-soft:#E3EBFF;
+  --orange:#FF7A1A; --orange-soft:#FFF0E3;
+  --purple:#7C5CFC; --purple-soft:#ECE8FF;
+  --green:#0E9F6E; --green-soft:#DFF7EC;
+  --teal:#0E8A9F; --teal-soft:#DFF5F8;
+  --amber:#D97706; --amber-soft:#FEF3C7;
+  --red:#DC2626; --red-soft:#FEE2E2;
+  --gold:#B45309;
+  --shadow:0 10px 30px rgba(10,15,46,.08);
+  --shadow-sm:0 2px 10px rgba(10,15,46,.06);
+  --radius:18px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#070B26; --surface:#101736; --surface2:#161E4A; --surface3:#1C265E;
+    --ink:#FFFFFF; --ink2:#D6DAEC; --muted:#9AA0B4; --line:#263068;
+    --blue:#5B8CFF; --blue-dark:#7AA5FF; --blue-soft:#1B2A66;
+    --orange:#FF8A3D; --orange-soft:#3A2412;
+    --purple:#A78BFA; --purple-soft:#2A2358;
+    --green:#34D399; --green-soft:#0F352A;
+    --teal:#38BDF8; --teal-soft:#0F2F42;
+    --amber:#FBBF24; --amber-soft:#3A2E10;
+    --red:#F87171; --red-soft:#3F1D1D;
+    --gold:#FBBF24;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+    --shadow-sm:0 2px 10px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"DM Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:"Plus Jakarta Sans",system-ui,sans-serif;line-height:1.12;letter-spacing:-.02em;margin:0}
+a{color:var(--blue)}
+button,input,select{font:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 18px 64px}
+
+/* HERO */
+.hero{padding:30px 0 8px}
+.hero-top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+.pill{display:inline-flex;align-items:center;gap:7px;font-size:.78rem;font-weight:700;letter-spacing:.02em;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink2)}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.hero h1{font-size:clamp(1.9rem,5.2vw,3.15rem);font-weight:800;max-width:14ch}
+.hero h1 em{font-style:normal;color:var(--blue)}
+.hero p.lead{margin:14px 0 0;font-size:1.07rem;color:var(--ink2);max-width:62ch}
+.hero p.lead strong{color:var(--ink)}
+
+/* SCALE STRIP */
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:22px 0 6px}
+.scale-item{border-radius:14px;padding:12px 12px 10px;border:1px solid var(--line);background:var(--surface)}
+.scale-item b{display:block;font-family:"Plus Jakarta Sans";font-size:.92rem}
+.scale-item span{font-family:"DM Mono",monospace;font-size:.82rem;font-weight:500}
+.scale-item small{display:block;color:var(--muted);font-size:.76rem;margin-top:2px;line-height:1.35}
+@media(max-width:700px){.scale{grid-template-columns:1fr 1fr}.scale-item:last-child{grid-column:1/-1}}
+.s-first{border-top:4px solid var(--orange)} .s-first span{color:var(--orange)}
+.s-21{border-top:4px solid var(--blue)} .s-21 span{color:var(--blue)}
+.s-22{border-top:4px solid var(--teal)} .s-22 span{color:var(--teal)}
+.s-third{border-top:4px solid var(--purple)} .s-third span{color:var(--purple)}
+.s-fail{border-top:4px solid var(--muted)} .s-fail span{color:var(--muted)}
+
+/* TABS */
+.tabs{position:sticky;top:0;z-index:20;background:var(--bg);padding:14px 0 10px}
+.tablist{display:flex;gap:8px;overflow-x:auto;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tablist::-webkit-scrollbar{display:none}
+.tab{flex:1 0 auto;border:0;background:transparent;color:var(--ink2);font-weight:700;font-size:.9rem;padding:11px 16px;border-radius:999px;cursor:pointer;white-space:nowrap;text-align:center}
+@media(max-width:700px){.tablist{flex-wrap:wrap;border-radius:20px;overflow-x:visible}.tab{flex:1 1 42%;white-space:normal}}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+@media (prefers-color-scheme: dark){ .tab[aria-selected="true"]{background:#FFFFFF;color:#0A0F2E} }
+.tab:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.panel{display:none} .panel.active{display:block}
+
+/* LAYOUT */
+.grid{display:grid;grid-template-columns:1.25fr .85fr;gap:18px;align-items:start;margin-top:8px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-sm)}
+.card + .card{margin-top:16px}
+.card h2{font-size:1.22rem;font-weight:800}
+.card h3{font-size:1rem;font-weight:700}
+.sub{color:var(--muted);font-size:.92rem;margin:6px 0 0}
+.result-card{position:sticky;top:78px}
+@media(max-width:860px){.result-card{position:static}}
+
+/* FORM */
+label{font-size:.82rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:5px}
+input[type="number"],input[type="text"],select{width:100%;background:var(--surface);border:1.5px solid var(--line);border-radius:11px;padding:11px 12px;color:var(--ink);font-weight:600}
+input[type="number"]{font-family:"DM Mono",monospace}
+input::placeholder{color:var(--muted);font-family:"DM Sans";font-weight:400}
+.field-row{display:grid;grid-template-columns:1fr 110px 110px 36px;gap:8px;align-items:end;margin-bottom:9px}
+.field-row.no-del{grid-template-columns:1fr 110px 110px}
+.field-row.two{grid-template-columns:1fr 1fr}
+@media(max-width:520px){
+  .field-row{grid-template-columns:1fr 86px 86px 34px;gap:6px}
+  .field-row.no-del{grid-template-columns:1fr 86px 86px}
+  input[type="number"],input[type="text"],select{padding:10px 9px;font-size:.95rem}
+}
+.icon-btn{width:36px;height:44px;border-radius:11px;border:1.5px solid var(--line);background:var(--surface2);color:var(--muted);cursor:pointer;font-size:1.05rem;line-height:1}
+.icon-btn:hover{color:var(--red);border-color:var(--red)}
+.btn{border:0;cursor:pointer;border-radius:11px;padding:12px 16px;font-weight:700}
+.btn-add{background:var(--blue-soft);color:var(--blue);width:100%;border:1.5px dashed var(--blue)}
+.btn-add:hover{background:var(--surface3)}
+.btn-ghost{background:var(--surface2);color:var(--ink2);border:1px solid var(--line)}
+.btn-primary{background:var(--blue);color:#fff;width:100%}
+.preset-row{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 4px}
+.chip{border:1.5px solid var(--line);background:var(--surface);color:var(--ink2);border-radius:999px;padding:7px 12px;font-size:.82rem;font-weight:700;cursor:pointer}
+.chip:hover,.chip.on{border-color:var(--blue);color:var(--blue);background:var(--blue-soft)}
+.seg{display:flex;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
+.seg button{flex:1;border:0;background:transparent;padding:9px 8px;border-radius:9px;font-weight:700;font-size:.88rem;color:var(--muted);cursor:pointer}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-sm)}
+.hint{font-size:.83rem;color:var(--muted);margin-top:8px}
+.warn{display:none;margin-top:10px;padding:10px 12px;border-radius:11px;background:var(--amber-soft);color:var(--amber);font-size:.87rem;font-weight:600}
+.warn.show{display:block}
+.totals{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);font-size:.9rem;color:var(--ink2)}
+.totals b{color:var(--ink);font-family:"DM Mono",monospace}
+
+/* RESULT */
+.result-eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.big-avg{font-family:"Plus Jakarta Sans";font-size:clamp(2.6rem,7vw,3.6rem);font-weight:800;line-height:1;margin:6px 0 2px}
+.big-avg small{font-size:1.3rem;color:var(--muted);font-weight:700}
+.class-badge{display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:9px 15px;border-radius:999px;font-family:"Plus Jakarta Sans";font-weight:800;font-size:1.02rem}
+.cb-first{background:var(--orange-soft);color:var(--orange);border:1.5px solid var(--orange)}
+.cb-21{background:var(--blue-soft);color:var(--blue);border:1.5px solid var(--blue)}
+.cb-22{background:var(--teal-soft);color:var(--teal);border:1.5px solid var(--teal)}
+.cb-third{background:var(--purple-soft);color:var(--purple);border:1.5px solid var(--purple)}
+.cb-fail{background:var(--red-soft);color:var(--red);border:1.5px solid var(--red)}
+.cb-none{background:var(--surface2);color:var(--muted);border:1.5px dashed var(--line)}
+.meter{margin:18px 0 6px}
+.meter-track{position:relative;height:14px;border-radius:999px;background:var(--surface3);overflow:visible}
+.meter-fill{height:100%;border-radius:999px;background:var(--blue);width:0%;transition:width .45s ease}
+.meter-marks{position:relative;height:20px;font-size:.7rem;color:var(--muted);font-family:"DM Mono",monospace}
+.meter-marks span{position:absolute;transform:translateX(-50%);top:3px}
+.meter-marks span::before{content:"";position:absolute;left:50%;top:-9px;width:1.5px;height:7px;background:var(--muted)}
+.next-box{margin-top:14px;background:var(--surface2);border-radius:13px;padding:13px 14px;font-size:.93rem;color:var(--ink2)}
+.next-box strong{color:var(--ink)}
+.breakdown{margin-top:14px}
+.breakdown-row{display:grid;grid-template-columns:86px 1fr 62px;gap:10px;align-items:center;font-size:.88rem;padding:7px 0;border-bottom:1px dashed var(--line)}
+.breakdown-row:last-child{border-bottom:0}
+.bar{height:9px;background:var(--surface3);border-radius:999px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--blue);border-radius:999px}
+.breakdown-row .val{text-align:right;font-family:"DM Mono",monospace;font-weight:500}
+
+/* NEED TABLE */
+.need-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:.93rem}
+.need-table th{text-align:left;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:2px solid var(--line)}
+.need-table td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.need-table tr:last-child td{border-bottom:0}
+.need-table .req{font-family:"DM Mono",monospace;font-weight:500;font-size:1.02rem;white-space:nowrap}
+.status{font-size:.8rem;font-weight:700;padding:4px 9px;border-radius:999px;white-space:nowrap;display:inline-block}
+.st-secured{background:var(--green-soft);color:var(--green)}
+.st-ok{background:var(--blue-soft);color:var(--blue)}
+.st-hard{background:var(--amber-soft);color:var(--amber)}
+.st-impossible{background:var(--red-soft);color:var(--red)}
+.verdict{margin-top:14px;border-radius:13px;padding:14px;font-size:.95rem}
+.verdict.good{background:var(--green-soft)} .verdict.mid{background:var(--blue-soft)} .verdict.hard{background:var(--amber-soft)} .verdict.bad{background:var(--red-soft)}
+.verdict strong{display:block;font-family:"Plus Jakarta Sans";font-size:1.05rem;margin-bottom:3px}
+
+/* CONTENT SECTIONS */
+.section{margin-top:38px}
+.section h2{font-size:1.55rem;font-weight:800;max-width:26ch}
+.section .sub{max-width:64ch;font-size:.98rem}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+@media(max-width:760px){.two-col{grid-template-columns:1fr}}
+.info-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.info-card h3{margin-bottom:6px}
+.info-card p{margin:0;color:var(--ink2);font-size:.94rem}
+table.guide{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-top:16px;font-size:.94rem}
+table.guide th{background:var(--surface2);text-align:left;padding:12px 14px;font-family:"Plus Jakarta Sans";font-size:.85rem}
+table.guide td{padding:12px 14px;border-top:1px solid var(--line);color:var(--ink2)}
+table.guide td:first-child{font-weight:700;color:var(--ink);white-space:nowrap}
+details{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:0 18px;margin-top:10px}
+details summary{cursor:pointer;font-family:"Plus Jakarta Sans";font-weight:700;padding:15px 0;list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center}
+details summary::after{content:"+";font-size:1.3rem;color:var(--blue);font-weight:800}
+details[open ] summary::after{content:"–"}
+details p{margin:0 0 15px;color:var(--ink2);font-size:.95rem;max-width:68ch}
+.example{background:var(--ink);color:#E8EBF7;border-radius:var(--radius);padding:22px;margin-top:16px}
+@media (prefers-color-scheme: dark){.example{background:#FFFFFF;color:#131A42}}
+.example h3{font-size:1.1rem;margin-bottom:8px}
+.example p{margin:0 0 8px;font-size:.96rem;opacity:.92}
+.example .calc{font-family:"DM Mono",monospace;font-size:.92rem;background:rgba(127,140,180,.18);border-radius:10px;padding:12px 14px;margin-top:10px;overflow-x:auto;white-space:nowrap}
+footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+footer p{margin:0 0 6px;max-width:72ch}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-top">
+      <span class="pill"><span class="dot"></span> Free &middot; No sign-up &middot; Works instantly</span>
+      <span class="pill">For UK undergraduates &amp; masters students</span>
+    </div>
+    <h1>What degree class are you <em>actually</em> on track for?</h1>
+    <p class="lead">Enter your marks once and get your <strong>weighted average</strong>, your <strong>degree classification</strong>, and — in the “What do I need?” tab — the <strong>exact mark you need in your final year</strong> to hit the class you want.</p>
+
+    <div class="scale" aria-label="UK degree classification boundaries">
+      <div class="scale-item s-first"><b>First Class</b><span>70%+</span><small>1st — the top honours class</small></div>
+      <div class="scale-item s-21"><b>Upper Second</b><span>60–69%</span><small>2:1 — most graduate jobs ask for this</small></div>
+      <div class="scale-item s-22"><b>Lower Second</b><span>50–59%</span><small>2:2 — a solid honours degree</small></div>
+      <div class="scale-item s-third"><b>Third Class</b><span>40–49%</span><small>3rd — a pass with honours</small></div>
+      <div class="scale-item s-fail"><b>Below 40%</b><span>&lt;40%</span><small>Fail / ordinary degree territory</small></div>
+    </div>
+  </header>
+
+  <!-- TABS -->
+  <nav class="tabs" aria-label="Calculator tools">
+    <div class="tablist" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-tab="degree">🎓 Full Degree</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="year">📅 Year Calculator</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="module">🧩 Module Calculator</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="need">🎯 What Do I Need?</button>
+    </div>
+  </nav>
+
+  <!-- ============ DEGREE PANEL ============ -->
+  <section class="panel active" id="panel-degree" role="tabpanel">
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2>Full degree calculator</h2>
+          <p class="sub">Add each year’s average and how much your university counts it for. Most UK universities ignore Year 1 and weight the final year most heavily — pick a common preset or set your own.</p>
+
+          <div style="margin-top:16px">
+            <label>Degree level</label>
+            <div class="seg" id="levelSeg">
+              <button class="on" data-level="ug">Undergraduate (BSc / BA)</button>
+              <button data-level="masters">Masters (MSc / MA)</button>
+              <button data-level="intmasters">Integrated Masters</button>
+            </div>
+          </div>
+
+          <div style="margin-top:16px">
+            <label>Common university weightings</label>
+            <div class="preset-row" id="degreePresets">
+              <button class="chip" data-preset="25-75">Year 2: 25% · Final: 75%</button>
+              <button class="chip" data-preset="33-67">Year 2: 33% · Final: 67%</button>
+              <button class="chip" data-preset="40-60">Year 2: 40% · Final: 60%</button>
+              <button class="chip" data-preset="0-100">Final year only: 100%</button>
+              <button class="chip" data-preset="10-30-60">Y1: 10% · Y2: 30% · Y3: 60%</button>
+            </div>
+          </div>
+
+          <div style="margin-top:14px" id="degreeRows">
+            <div class="field-row no-del">
+              <div><label for="d-y1-avg">Year 1 average (%)</label><input type="number" id="d-y1-avg" min="0" max="100" step="0.1" placeholder="e.g. 55"></div>
+              <div><label for="d-y1-w">Weight %</label><input type="number" id="d-y1-w" min="0" max="100" step="1" value="0"></div>
+              <div><label>&nbsp;</label><input type="text" value="Often 0%" disabled aria-hidden="true" style="opacity:.55"></div>
+            </div>
+            <div class="field-row no-del">
+              <div><label for="d-y2-avg">Year 2 average (%)</label><input type="number" id="d-y2-avg" min="0" max="100" step="0.1" placeholder="e.g. 58"></div>
+              <div><label for="d-y2-w">Weight %</label><input type="number" id="d-y2-w" min="0" max="100" step="1" value="25"></div>
+              <div><label>&nbsp;</label><input type="text" value="Year 2" disabled aria-hidden="true" style="opacity:.55"></div>
+            </div>
+            <div class="field-row no-del">
+              <div><label for="d-y3-avg">Year 3 / final year average (%)</label><input type="number" id="d-y3-avg" min="0" max="100" step="0.1" placeholder="e.g. 64"></div>
+              <div><label for="d-y3-w">Weight %</label><input type="number" id="d-y3-w" min="0" max="100" step="1" value="75"></div>
+              <div><label>&nbsp;</label><input type="text" value="Final year" disabled aria-hidden="true" style="opacity:.55"></div>
+            </div>
+            <div class="field-row no-del" id="y4Row" style="display:none">
+              <div><label for="d-y4-avg">Year 4 average (%) — Integrated Masters</label><input type="number" id="d-y4-avg" min="0" max="100" step="0.1" placeholder="e.g. 68"></div>
+              <div><label for="d-y4-w">Weight %</label><input type="number" id="d-y4-w" min="0" max="100" step="1" value="0"></div>
+              <div><label>&nbsp;</label><input type="text" value="Year 4" disabled aria-hidden="true" style="opacity:.55"></div>
+            </div>
+          </div>
+          <div class="warn" id="degreeWarn"></div>
+          <p class="hint">Don’t know a year’s average yet? Work it out first in the <strong>Year Calculator</strong> tab, then bring the number back here. Don’t know your weightings? Check your course handbook — 25/75 and 40/60 are the most common.</p>
+        </div>
+
+        <div class="card">
+          <h3>How your result is worked out</h3>
+          <p class="sub" style="margin-top:6px">Weighted average = (Year average × its weight) added up for every year, divided by the total weight used. Example: Year 2 at 58% counting 25%, final year at 64% counting 75%:</p>
+          <div class="example" style="margin-top:12px">
+            <div class="calc">(58 × 0.25) + (64 × 0.75) = 14.5 + 48 = 62.5% → Upper Second (2:1)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card result-card" aria-live="polite">
+        <div class="result-eyebrow">Your weighted average</div>
+        <div class="big-avg"><span id="degreeAvg">—</span><small id="degreeAvgUnit"></small></div>
+        <div><span class="class-badge cb-none" id="degreeBadge">Enter your year averages</span></div>
+        <div class="meter">
+          <div class="meter-track"><div class="meter-fill" id="degreeMeter"></div></div>
+          <div class="meter-marks"><span style="left:40%">40</span><span style="left:50%">50</span><span style="left:60%">60</span><span style="left:70%">70</span></div>
+        </div>
+        <div class="next-box" id="degreeNext">Add at least one year average and weight to see how close you are to the next class up.</div>
+        <div class="breakdown" id="degreeBreakdown"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ YEAR PANEL ============ -->
+  <section class="panel" id="panel-year" role="tabpanel">
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2>Year calculator — modules in one year</h2>
+          <p class="sub">List every module in a single year with its mark and credit value. A standard UK year is <strong>120 credits</strong> — usually six 20-credit modules. Your year average is weighted by credits, so a 40-credit dissertation counts double a 20-credit module.</p>
+          <div style="margin-top:16px">
+            <div class="field-row" style="margin-bottom:4px">
+              <div><label>Module name</label></div><div><label>Mark %</label></div><div><label>Credits</label></div><div></div>
+            </div>
+            <div id="yearRows"></div>
+            <button class="btn btn-add" id="addYearModule">+ Add another module</button>
+            <div class="preset-row">
+              <button class="chip" id="yearExample">Load an example year</button>
+              <button class="chip" id="yearClear">Clear all</button>
+            </div>
+            <div class="totals"><span>Total credits: <b id="yearCredits">0</b> / 120</span><span>Modules: <b id="yearCount">0</b></span><span>Simple average: <b id="yearSimple">—</b></span></div>
+            <p class="hint">Tip: if all your modules are worth the same credits, the weighted and simple averages will match. They only differ when credit values differ.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card result-card" aria-live="polite">
+        <div class="result-eyebrow">Your year average (credit-weighted)</div>
+        <div class="big-avg"><span id="yearAvg">—</span><small id="yearAvgUnit"></small></div>
+        <div><span class="class-badge cb-none" id="yearBadge">Add your modules</span></div>
+        <div class="meter">
+          <div class="meter-track"><div class="meter-fill" id="yearMeter"></div></div>
+          <div class="meter-marks"><span style="left:40%">40</span><span style="left:50%">50</span><span style="left:60%">60</span><span style="left:70%">70</span></div>
+        </div>
+        <div class="next-box" id="yearNext">Your year average feeds straight into the Full Degree tab — combine it with your other years and their weightings there.</div>
+        <div class="breakdown" id="yearBreakdown"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MODULE PANEL ============ -->
+  <section class="panel" id="panel-module" role="tabpanel">
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2>Module calculator — one module, several assessments</h2>
+          <p class="sub">A single module is rarely one exam. Add each assessment — exam, coursework, presentation, lab report — with the mark you got (or expect) and how much of the module it is worth. The weights should add up to 100%.</p>
+          <div style="margin-top:16px">
+            <label for="modName">Module name (optional)</label>
+            <input type="text" id="modName" placeholder="e.g. Introduction to Economics">
+          </div>
+          <div style="margin-top:14px">
+            <div class="field-row" style="margin-bottom:4px">
+              <div><label>Assessment</label></div><div><label>Mark %</label></div><div><label>Weight %</label></div><div></div>
+            </div>
+            <div id="moduleRows"></div>
+            <button class="btn btn-add" id="addAssessment">+ Add another assessment</button>
+            <div class="preset-row">
+              <button class="chip" data-modpreset="exam-coursework">Exam 60% + Coursework 40%</button>
+              <button class="chip" data-modpreset="exam-only">Exam 100%</button>
+              <button class="chip" data-modpreset="coursework-only">Coursework 100%</button>
+            </div>
+            <div class="warn" id="moduleWarn"></div>
+            <div class="totals"><span>Total weight entered: <b id="moduleWeightTotal">0%</b></span></div>
+            <p class="hint">Still waiting on a mark? Put in the mark you’re aiming for and see what module grade it would give you — then try the “What do I need?” tab for the full picture.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card result-card" aria-live="polite">
+        <div class="result-eyebrow">Your module grade</div>
+        <div class="big-avg"><span id="moduleAvg">—</span><small id="moduleAvgUnit"></small></div>
+        <div><span class="class-badge cb-none" id="moduleBadge">Add your assessments</span></div>
+        <div class="meter">
+          <div class="meter-track"><div class="meter-fill" id="moduleMeter"></div></div>
+          <div class="meter-marks"><span style="left:40%">40</span><span style="left:50%">50</span><span style="left:60%">60</span><span style="left:70%">70</span></div>
+        </div>
+        <div class="next-box" id="moduleNext">Module grades at undergraduate level use the same boundaries: 70%+ is first-class standard, 60%+ is 2:1 standard, 50%+ is 2:2 standard and 40%+ is a pass.</div>
+        <div class="breakdown" id="moduleBreakdown"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NEED PANEL ============ -->
+  <section class="panel" id="panel-need" role="tabpanel">
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2>What do I need?</h2>
+          <p class="sub">The reverse calculator. Tell it what you’ve already got and how much of your degree is still to come — it works backwards to the exact average you need from here.</p>
+          <div style="margin-top:16px">
+            <label>Calculate by</label>
+            <div class="seg" id="needSeg">
+              <button class="on" data-needmode="years">Year weightings</button>
+              <button data-needmode="credits">Remaining credits</button>
+            </div>
+          </div>
+
+          <div id="needYearsBox" style="margin-top:16px">
+            <div class="field-row two">
+              <div><label for="n-avg">Average so far (%) — e.g. your Year 2 average</label><input type="number" id="n-avg" min="0" max="100" step="0.1" placeholder="e.g. 58"></div>
+              <div><label for="n-done-weight">How much of your degree is that worth? (%)</label><input type="number" id="n-done-weight" min="0" max="99" step="1" value="25"></div>
+            </div>
+            <div class="preset-row">
+              <button class="chip" data-needpreset="25">Year 2 counts 25% · Final year 75% left</button>
+              <button class="chip" data-needpreset="40">Year 2 counts 40% · Final year 60% left</button>
+              <button class="chip" data-needpreset="33">Year 2 counts 33% · Final year 67% left</button>
+            </div>
+            <p class="hint">The rest of your degree (<b id="needRemainLabel">75%</b>) is treated as still to come — usually your final year.</p>
+          </div>
+
+          <div id="needCreditsBox" style="margin-top:16px;display:none">
+            <div class="field-row two">
+              <div><label for="nc-avg">Average on credits completed so far (%)</label><input type="number" id="nc-avg" min="0" max="100" step="0.1" placeholder="e.g. 57"></div>
+              <div><label for="nc-done">Credits completed</label><input type="number" id="nc-done" min="0" max="1000" step="5" placeholder="e.g. 80"></div>
+            </div>
+            <div class="field-row two" style="margin-top:8px">
+              <div><label for="nc-left">Credits still to come</label><input type="number" id="nc-left" min="1" max="1000" step="5" placeholder="e.g. 40"></div>
+              <div><label for="nc-target">Target overall average (%)</label><input type="number" id="nc-target" min="0" max="100" step="0.5" value="60"></div>
+            </div>
+            <p class="hint">Use this mid-year: for example, 80 of 120 credits done at 57%, with 40 credits (maybe just your dissertation) still to submit.</p>
+          </div>
+
+          <div style="margin-top:14px">
+            <label for="needLevel">Degree level</label>
+            <select id="needLevel">
+              <option value="ug" selected>Undergraduate — First / 2:1 / 2:2 / Third</option>
+              <option value="masters">Masters — Distinction / Merit / Pass</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>The question every final-year student asks</h3>
+          <p class="sub" style="margin-top:6px">“My Year 2 average is 58% and it counts for 25% of my degree. What do I need in final year for a 2:1?”</p>
+          <div class="example" style="margin-top:12px">
+            <p><strong>Answer: 60.7%.</strong> The maths: a 2:1 needs 60% overall. Year 2 already banks 58 × 0.25 = 14.5 points, so your final year must supply 60 − 14.5 = 45.5 points across its 75% weight: 45.5 ÷ 0.75 = <strong>60.7%</strong>.</p>
+            <p style="margin:0">Try it above — set “average so far” to 58 and the completed weight to 25%.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card result-card" aria-live="polite">
+        <div class="result-eyebrow">What you need from here</div>
+        <div id="needVerdict"><div class="next-box">Enter your average so far to see exactly what each degree class requires — and whether it’s already secured, comfortably on, a stretch, or out of reach.</div></div>
+        <table class="need-table" id="needTable" style="display:none">
+          <thead><tr><th>Target class</th><th>You need</th><th>Status</th></tr></thead>
+          <tbody id="needTableBody"></tbody>
+        </table>
+        <p class="hint" id="needFootnote" style="display:none">“Already secured” means you’d hit that class even with 0% from here — your banked marks alone clear the boundary. Anything over 100% is mathematically impossible on the standard marking scale.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTENT -->
+  <section class="section">
+    <h2>How UK degree classifications actually work</h2>
+    <p class="sub">Your final class isn’t just “your average” — it’s a weighted average, and the weighting is where most students get caught out.</p>
+    <div class="two-col">
+      <div class="info-card"><h3>Year 1 usually doesn’t count</h3><p>At most UK universities, first-year marks only need to pass (40%) to progress. Your classification is normally built from Year 2 and your final year only — which is why a weak Year 1 rarely ruins a degree, and a strong final year can rescue a lot.</p></div>
+      <div class="info-card"><h3>The final year counts most</h3><p>Common weightings are 25/75, 33/67 and 40/60 (Year 2 / final year). A single final-year module can move your overall average far more than a Year 2 module did — especially large-credit projects and dissertations.</p></div>
+      <div class="info-card"><h3>Credits weight your modules</h3><p>Within a year, modules are weighted by credits. A 40-credit module at 65% pulls your average up twice as hard as a 20-credit module at the same mark. Always check the credit value before panicking — or celebrating — over one result.</p></div>
+      <div class="info-card"><h3>Borderline students may be uplifted</h3><p>Many universities review students within about 2% of a boundary (for example 58–59.9% for a 2:1). If most of your final-year credits sit in the higher class, your board may award the higher classification. Rules vary by university — this calculator shows the straight weighted average.</p></div>
+    </div>
+
+    <table class="guide" aria-label="UK classification boundaries for undergraduate and masters degrees">
+      <thead><tr><th>Classification</th><th>Undergraduate</th><th>Masters</th><th>What it means</th></tr></thead>
+      <tbody>
+        <tr><td>Top class</td><td>First Class Honours — 70%+</td><td>Distinction — 70%+</td><td>Outstanding work; the strongest signal to employers and PhD admissions.</td></tr>
+        <tr><td>Second class</td><td>Upper Second (2:1) — 60–69%</td><td>Merit — 60–69%</td><td>The most common “good” degree — and the minimum most graduate schemes ask for.</td></tr>
+        <tr><td>Next class</td><td>Lower Second (2:2) — 50–59%</td><td>Pass — 50–59%</td><td>A solid result; plenty of employers accept a 2:2, especially with experience.</td></tr>
+        <tr><td>Pass class</td><td>Third Class Honours — 40–49%</td><td>Below 50% is a fail at masters level</td><td>Still an honours degree at undergraduate level.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>Common questions</h2>
+    <details><summary>What average do I need for a 2:1?</summary><p>60% overall — but “overall” means your weighted average across the years that count, not a simple mean of every mark you’ve ever received. If your Year 2 average is below 60%, you can still finish with a 2:1 if your final year (which usually counts for more) pulls the weighted average up to 60. Use the “What do I need?” tab to get your exact number.</p></details>
+    <details><summary>My Year 2 average is 58%. Can I still get a First?</summary><p>Possibly — it depends on the weighting. With Year 2 at 25% and the final year at 75%, you’d need (70 − 58 × 0.25) ÷ 0.75 = 74% in your final year. That’s demanding but done every year. With a 40/60 weighting you’d need 78% — a much taller order. Run your own numbers in the reverse calculator.</p></details>
+    <details><summary>Do all universities use the same weightings?</summary><p>No. 25/75, 33/67 and 40/60 are the most common patterns for Year 2 / final year, some universities use the best 100 credits of your final year, some use a “exit velocity” or majority-of-credits rule at borderlines, and a few count Year 1 slightly. Always confirm your own university’s regulations in your course handbook — then set those exact weightings here.</p></details>
+    <details><summary>What happens if I’m just below a boundary — like 59.4%?</summary><p>Many universities have a borderline policy: if your weighted average falls within a set margin (often 2%) below a boundary and a majority of your final-year credits are at the higher class, the exam board can award the higher classification. It’s discretionary and university-specific, so a 59.4% is not a guaranteed 2:1 — but it’s often worth checking your regulations before assuming the lower class.</p></details>
+    <details><summary>How is a masters classification different?</summary><p>Masters degrees use three outcomes instead of four: Distinction (70%+), Merit (60–69%) and Pass (50–59%). Below 50% is a fail — there’s no equivalent of a Third. The weighted-average maths is identical; select “Masters” in the calculators to use these boundaries.</p></details>
+    <details><summary>Is a 2:2 a bad degree?</summary><p>No. A 2:2 is a full honours degree and a large share of UK graduates receive one. Some large graduate schemes filter at 2:1, but many employers, most SMEs and most postgraduate courses (with experience) consider 2:2 graduates. Your class is one line on your CV — placements, projects and experience carry real weight alongside it.</p></details>
+  </section>
+
+  <footer>
+    <p><strong>Important:</strong> This calculator gives the standard weighted-average result used by most UK universities. Your university’s own regulations — borderline uplifts, best-credits rules, condonement and capping of resits — are the final word on your classification. Always check your course handbook or ask your registry if your result is close to a boundary.</p>
+    <p>Boundaries shown: Undergraduate — First 70%+, 2:1 60%+, 2:2 50%+, Third 40%+. Masters — Distinction 70%+, Merit 60%+, Pass 50%+.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  function $(id){return document.getElementById(id);}
+  function num(el){ if(!el) return NaN; var v=parseFloat(el.value); return isNaN(v)?NaN:v; }
+  function fmt(v){ return (Math.round(v*10)/10).toFixed(1).replace(/\.0$/,""); }
+  function clamp01(v){ return Math.max(0,Math.min(100,v)); }
+
+  var UG=[{min:70,label:"First Class Honours",short:"First",cls:"cb-first"},{min:60,label:"Upper Second Class Honours (2:1)",short:"2:1",cls:"cb-21"},{min:50,label:"Lower Second Class Honours (2:2)",short:"2:2",cls:"cb-22"},{min:40,label:"Third Class Honours",short:"Third",cls:"cb-third"},{min:0,label:"Below pass mark",short:"Fail",cls:"cb-fail"}];
+  var MA=[{min:70,label:"Distinction",short:"Distinction",cls:"cb-first"},{min:60,label:"Merit",short:"Merit",cls:"cb-21"},{min:50,label:"Pass",short:"Pass",cls:"cb-22"},{min:0,label:"Fail (below 50% at masters level)",short:"Fail",cls:"cb-fail"}];
+  function classify(avg,level){ var bands=(level==="ug")?UG:MA; for(var i=0;i<bands.length;i++){ if(avg>=bands[i].min) return bands[i]; } return bands[bands.length-1]; }
+  function nextBand(avg,level){ var bands=(level==="ug")?UG:MA; var sorted=bands.slice().sort(function(a,b){return a.min-b.min;}); for(var i=0;i<sorted.length;i++){ if(sorted[i].min>avg) return sorted[i]; } return null; }
+
+  function renderResult(prefix,avg,level,emptyMsg,nextExtra){
+    var avgEl=$(prefix+"Avg"),unitEl=$(prefix+"AvgUnit"),badge=$(prefix+"Badge"),meter=$(prefix+"Meter"),next=$(prefix+"Next");
+    if(isNaN(avg)){ avgEl.textContent="—"; unitEl.textContent=""; badge.className="class-badge cb-none"; badge.textContent=emptyMsg; meter.style.width="0%"; if(nextExtra) next.innerHTML=nextExtra; return; }
+    var c=classify(avg,level);
+    avgEl.textContent=fmt(avg); unitEl.textContent="%";
+    badge.className="class-badge "+c.cls; badge.textContent=c.label;
+    meter.style.width=clamp01(avg)+"%";
+    meter.style.background = c.short==="First"||c.short==="Distinction" ? "var(--orange)" : c.short==="2:1"||c.short==="Merit" ? "var(--blue)" : c.short==="2:2"||c.short==="Pass" ? "var(--teal)" : c.short==="Third" ? "var(--purple)" : "var(--red)";
+    var nb=nextBand(avg,level);
+    if(nb){ var gap=nb.min-avg; next.innerHTML="You are <strong>"+fmt(gap)+"%</strong> below a <strong>"+nb.label+"</strong> ("+nb.min+"%). "+(nextExtra||""); }
+    else { next.innerHTML="You are in the <strong>top classification band</strong> — there is no class above this one. "+(nextExtra||""); }
+  }
+
+  /* ---------- TABS ---------- */
+  var tabs=document.querySelectorAll(".tab");
+  tabs.forEach(function(t){ t.addEventListener("click",function(){
+    tabs.forEach(function(x){x.setAttribute("aria-selected","false");});
+    t.setAttribute("aria-selected","true");
+    document.querySelectorAll(".panel").forEach(function(p){p.classList.remove("active");});
+    $("panel-"+t.getAttribute("data-tab")).classList.add("active");
+    window.scrollTo({top:document.querySelector(".tabs").offsetTop-6,behavior:"smooth"});
+  }); });
+
+  /* ---------- DEGREE ---------- */
+  var degreeLevel="ug";
+  var levelSeg=$("levelSeg");
+  levelSeg.querySelectorAll("button").forEach(function(b){ b.addEventListener("click",function(){
+    levelSeg.querySelectorAll("button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on");
+    degreeLevel=b.getAttribute("data-level");
+    $("y4Row").style.display = degreeLevel==="intmasters" ? "" : "none";
+    if(degreeLevel==="intmasters"){ setWeights({y1:0,y2:20,y3:40,y4:40}); }
+    calcDegree();
+  }); });
+  function setWeights(w){
+    if(w.y1!==undefined) $("d-y1-w").value=w.y1;
+    if(w.y2!==undefined) $("d-y2-w").value=w.y2;
+    if(w.y3!==undefined) $("d-y3-w").value=w.y3;
+    if(w.y4!==undefined) $("d-y4-w").value=w.y4;
+  }
+  $("degreePresets").querySelectorAll(".chip").forEach(function(ch){ ch.addEventListener("click",function(){
+    $("degreePresets").querySelectorAll(".chip").forEach(function(x){x.classList.remove("on");}); ch.classList.add("on");
+    var p=ch.getAttribute("data-preset");
+    if(p==="25-75") setWeights({y1:0,y2:25,y3:75,y4:0});
+    if(p==="33-67") setWeights({y1:0,y2:33,y3:67,y4:0});
+    if(p==="40-60") setWeights({y1:0,y2:40,y3:60,y4:0});
+    if(p==="0-100") setWeights({y1:0,y2:0,y3:100,y4:0});
+    if(p==="10-30-60") setWeights({y1:10,y2:30,y3:60,y4:0});
+    calcDegree();
+  }); });
+  ["d-y1-avg","d-y1-w","d-y2-avg","d-y2-w","d-y3-avg","d-y3-w","d-y4-avg","d-y4-w"].forEach(function(id){ var el=$(id); if(el) el.addEventListener("input",calcDegree); });
+
+  function calcDegree(){
+    var rows=[{name:"Year 1",avg:num($("d-y1-avg")),w:num($("d-y1-w"))},{name:"Year 2",avg:num($("d-y2-avg")),w:num($("d-y2-w"))},{name:"Final year",avg:num($("d-y3-avg")),w:num($("d-y3-w"))}];
+    if(degreeLevel==="intmasters") rows.push({name:"Year 4",avg:num($("d-y4-avg")),w:num($("d-y4-w"))});
+    var totalW=0,sum=0,used=[];
+    rows.forEach(function(r){ if(!isNaN(r.avg)&&!isNaN(r.w)&&r.w>0){ totalW+=r.w; sum+=r.avg*r.w; used.push(r); } });
+    var warn=$("degreeWarn"); var allW=rows.reduce(function(a,r){return a+(isNaN(r.w)?0:r.w);},0);
+    if(allW>0 && allW!==100 && used.length){ warn.textContent="Heads up: your weights add up to "+allW+"%, not 100%. The result below is calculated proportionally from the weights you entered."; warn.classList.add("show"); }
+    else warn.classList.remove("show");
+    var bd=$("degreeBreakdown"); bd.innerHTML="";
+    if(!used.length){ renderResult("degree",NaN, degreeLevel==="masters"?"ma":"ug", "Enter your year averages","Add at least one year average and weight to see how close you are to the next class up."); return; }
+    var avg=sum/totalW;
+    used.forEach(function(r){
+      var contrib=r.avg*r.w/totalW;
+      var div=document.createElement("div"); div.className="breakdown-row";
+      div.innerHTML="<span>"+r.name+" ("+r.w+"%)</span><span class='bar'><i style='width:"+clamp01(r.avg)+"%'></i></span><span class='val'>+"+fmt(contrib)+"%</span>";
+      bd.appendChild(div);
+    });
+    renderResult("degree",avg, degreeLevel==="masters"?"ma":"ug", "", "Each row above shows how many points that year contributes to your final average.");
+  }
+
+  /* ---------- YEAR (dynamic module rows) ---------- */
+  var yearRowsEl=$("yearRows");
+  function yearRow(name,mark,credits){
+    var div=document.createElement("div"); div.className="field-row";
+    div.innerHTML="<div><input type='text' class='y-name' placeholder='e.g. Marketing Principles' value='"+(name||"")+"'></div>"+
+      "<div><input type='number' class='y-mark' min='0' max='100' step='0.1' placeholder='65' value='"+(mark!==undefined?mark:"")+"'></div>"+
+      "<div><input type='number' class='y-credits' min='0' max='120' step='5' placeholder='20' value='"+(credits!==undefined?credits:"20")+"'></div>"+
+      "<div><button class='icon-btn' aria-label='Remove module'>×</button></div>";
+    div.querySelector(".icon-btn").addEventListener("click",function(){ div.remove(); calcYear(); });
+    div.querySelectorAll("input").forEach(function(i){ i.addEventListener("input",calcYear); });
+    yearRowsEl.appendChild(div);
+  }
+  for(var i=0;i<4;i++) yearRow();
+  $("addYearModule").addEventListener("click",function(){ yearRow(); calcYear(); });
+  $("yearExample").addEventListener("click",function(){
+    yearRowsEl.innerHTML="";
+    [["Research Methods",62,20],["Marketing Principles",58,20],["Financial Accounting",71,20],["Business Law",55,20],["Organisational Behaviour",66,20],["Digital Business",60,20]].forEach(function(m){ yearRow(m[0],m[1],m[2]); });
+    calcYear();
+  });
+  $("yearClear").addEventListener("click",function(){ yearRowsEl.innerHTML=""; for(var j=0;j<3;j++) yearRow(); calcYear(); });
+
+  function calcYear(){
+    var rows=yearRowsEl.querySelectorAll(".field-row");
+    var totalC=0,sum=0,simpleSum=0,simpleN=0,used=[];
+    rows.forEach(function(r,idx){
+      var mark=parseFloat(r.querySelector(".y-mark").value), cr=parseFloat(r.querySelector(".y-credits").value), nm=r.querySelector(".y-name").value||("Module "+(idx+1));
+      if(!isNaN(mark)){ simpleSum+=mark; simpleN++; }
+      if(!isNaN(mark)&&!isNaN(cr)&&cr>0){ totalC+=cr; sum+=mark*cr; used.push({name:nm,mark:mark,cr:cr}); }
+    });
+    $("yearCredits").textContent=totalC; $("yearCount").textContent=used.length;
+    $("yearSimple").textContent= simpleN? fmt(simpleSum/simpleN)+"%" : "—";
+    var bd=$("yearBreakdown"); bd.innerHTML="";
+    if(!used.length){ renderResult("year",NaN,"ug","Add your modules","Your year average feeds straight into the Full Degree tab — combine it with your other years and their weightings there."); return; }
+    var avg=sum/totalC;
+    used.forEach(function(m){
+      var div=document.createElement("div"); div.className="breakdown-row";
+      div.innerHTML="<span>"+m.name.replace(/</g,"&lt;")+" · "+m.cr+"cr</span><span class='bar'><i style='width:"+clamp01(m.mark)+"%'></i></span><span class='val'>"+fmt(m.mark)+"%</span>";
+      bd.appendChild(div);
+    });
+    renderResult("year",avg,"ug","","Take this average into the <strong>Full Degree</strong> tab and combine it with your other years.");
+  }
+
+  /* ---------- MODULE (assessment rows) ---------- */
+  var moduleRowsEl=$("moduleRows");
+  function moduleRow(name,mark,weight){
+    var div=document.createElement("div"); div.className="field-row";
+    div.innerHTML="<div><input type='text' class='m-name' placeholder='e.g. Exam' value='"+(name||"")+"'></div>"+
+      "<div><input type='number' class='m-mark' min='0' max='100' step='0.1' placeholder='65' value='"+(mark!==undefined?mark:"")+"'></div>"+
+      "<div><input type='number' class='m-weight' min='0' max='100' step='1' placeholder='60' value='"+(weight!==undefined?weight:"")+"'></div>"+
+      "<div><button class='icon-btn' aria-label='Remove assessment'>×</button></div>";
+    div.querySelector(".icon-btn").addEventListener("click",function(){ div.remove(); calcModule(); });
+    div.querySelectorAll("input").forEach(function(i){ i.addEventListener("input",calcModule); });
+    moduleRowsEl.appendChild(div);
+  }
+  moduleRow("Exam","",60); moduleRow("Coursework","",40);
+  $("addAssessment").addEventListener("click",function(){ moduleRow(); calcModule(); });
+  document.querySelectorAll("[data-modpreset]").forEach(function(ch){ ch.addEventListener("click",function(){
+    moduleRowsEl.innerHTML="";
+    var p=ch.getAttribute("data-modpreset");
+    if(p==="exam-coursework"){ moduleRow("Exam","",60); moduleRow("Coursework","",40); }
+    if(p==="exam-only"){ moduleRow("Exam","",100); }
+    if(p==="coursework-only"){ moduleRow("Coursework","",100); }
+    calcModule();
+  }); });
+
+  function calcModule(){
+    var rows=moduleRowsEl.querySelectorAll(".field-row");
+    var totalW=0,sum=0,used=[];
+    rows.forEach(function(r,idx){
+      var mark=parseFloat(r.querySelector(".m-mark").value), w=parseFloat(r.querySelector(".m-weight").value), nm=r.querySelector(".m-name").value||("Assessment "+(idx+1));
+      if(!isNaN(w)) totalW+= (isNaN(w)?0:w);
+      if(!isNaN(mark)&&!isNaN(w)&&w>0){ sum+=mark*w; used.push({name:nm,mark:mark,w:w}); }
+    });
+    var enteredW=0; rows.forEach(function(r){ var w=parseFloat(r.querySelector(".m-weight").value); if(!isNaN(w)) enteredW+=w; });
+    var usedW=used.reduce(function(a,m){return a+m.w;},0);
+    $("moduleWeightTotal").textContent=enteredW+"%";
+    var warn=$("moduleWarn");
+    if(enteredW>0&&enteredW!==100){ warn.textContent="Your assessment weights add up to "+enteredW+"%, not 100%. The grade below is worked out proportionally from the weights entered — add the missing assessment or fix the weights for an exact module grade."; warn.classList.add("show"); }
+    else if(used.length&&usedW>0&&usedW<enteredW){ warn.textContent="Showing your grade from the assessments you've entered marks for so far ("+usedW+"% of the module). Add the remaining marks for your final module grade."; warn.classList.add("show"); }
+    else warn.classList.remove("show");
+    var bd=$("moduleBreakdown"); bd.innerHTML="";
+    if(!used.length||usedW===0){ renderResult("module",NaN,"ug","Add your assessments","Module grades use the same boundaries: 70%+ is first-class standard, 60%+ is 2:1 standard, 50%+ is 2:2 standard and 40%+ is a pass."); return; }
+    var avg=sum/usedW;
+    used.forEach(function(m){
+      var div=document.createElement("div"); div.className="breakdown-row";
+      div.innerHTML="<span>"+m.name.replace(/</g,"&lt;")+" ("+m.w+"%)</span><span class='bar'><i style='width:"+clamp01(m.mark)+"%'></i></span><span class='val'>"+fmt(m.mark)+"%</span>";
+      bd.appendChild(div);
+    });
+    renderResult("module",avg,"ug","","");
+  }
+
+  /* ---------- WHAT DO I NEED ---------- */
+  var needMode="years";
+  $("needSeg").querySelectorAll("button").forEach(function(b){ b.addEventListener("click",function(){
+    $("needSeg").querySelectorAll("button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on");
+    needMode=b.getAttribute("data-needmode");
+    $("needYearsBox").style.display= needMode==="years"?"":"none";
+    $("needCreditsBox").style.display= needMode==="credits"?"":"none";
+    calcNeed();
+  }); });
+  document.querySelectorAll("[data-needpreset]").forEach(function(ch){ ch.addEventListener("click",function(){ $("n-done-weight").value=ch.getAttribute("data-needpreset"); calcNeed(); }); });
+  ["n-avg","n-done-weight","nc-avg","nc-done","nc-left","nc-target"].forEach(function(id){ $(id).addEventListener("input",calcNeed); });
+  $("needLevel").addEventListener("change",calcNeed);
+
+  function statusFor(req){
+    if(req<=0) return {t:"Already secured",cls:"st-secured"};
+    if(req<=70) return {t:"Achievable",cls:"st-ok"};
+    if(req<=85) return {t:"A stretch",cls:"st-hard"};
+    if(req<=100) return {t:"Very hard",cls:"st-hard"};
+    return {t:"Not possible",cls:"st-impossible"};
+  }
+  function calcNeed(){
+    var level=$("needLevel").value; var bands=(level==="ug"?UG:MA).filter(function(b){return b.min>0;});
+    var doneAvg,doneShare,remainShare,isCredits=false,targetOnly=null;
+    if(needMode==="years"){
+      doneAvg=num($("n-avg")); var dw=num($("n-done-weight"));
+      if(isNaN(dw)||dw<0||dw>=100){ $("needRemainLabel").textContent="—"; }
+      else $("needRemainLabel").textContent=(100-dw)+"%";
+      if(isNaN(doneAvg)||isNaN(dw)||dw<0||dw>=100){ $("needTable").style.display="none"; $("needFootnote").style.display="none"; $("needVerdict").innerHTML="<div class='next-box'>Enter your average so far and its degree weight (it must be under 100% — some of your degree has to still be to come) to see your targets.</div>"; return; }
+      doneShare=dw/100; remainShare=1-doneShare;
+    } else {
+      isCredits=true;
+      doneAvg=num($("nc-avg")); var dc=num($("nc-done")), lc=num($("nc-left")), tg=num($("nc-target"));
+      if(isNaN(doneAvg)||isNaN(dc)||isNaN(lc)||dc<0||lc<=0){ $("needTable").style.display="none"; $("needFootnote").style.display="none"; $("needVerdict").innerHTML="<div class='next-box'>Enter your average so far, the credits you have completed and the credits still to come.</div>"; return; }
+      var total=dc+lc; doneShare=dc/total; remainShare=lc/total; targetOnly=isNaN(tg)?60:tg;
+    }
+    $("needTable").style.display=""; $("needFootnote").style.display="";
+    var tbody=$("needTableBody"); tbody.innerHTML="";
+    var targets = isCredits ? [{min:targetOnly,label:"Target average ("+fmt(targetOnly)+"%)",short:"Target"}] : bands;
+    var bestVerdict=null;
+    targets.forEach(function(b){
+      var req=(b.min - doneAvg*doneShare)/remainShare;
+      var st=statusFor(req);
+      var tr=document.createElement("tr");
+      var reqText = req<=0 ? "0% — already banked" : fmt(req)+"%";
+      tr.innerHTML="<td><strong>"+b.label+"</strong></td><td class='req'>"+reqText+"</td><td><span class='status "+st.cls+"'>"+st.t+"</span></td>";
+      tbody.appendChild(tr);
+      if(!isCredits && b.min===60 && level==="ug") bestVerdict={req:req,st:st};
+      if(!isCredits && b.min===70) window._fv={req:req,st:st};
+    });
+    var v=$("needVerdict");
+    if(isCredits){
+      var reqC=(targetOnly - doneAvg*doneShare)/remainShare; var stC=statusFor(reqC);
+      if(reqC<=0) v.innerHTML="<div class='verdict good'><strong>Already there 🎉</strong>Your completed credits alone average above your "+fmt(targetOnly)+"% target — even 0% on what remains keeps you at "+fmt(doneAvg*doneShare)+"% overall.</div>";
+      else if(reqC>100) v.innerHTML="<div class='verdict bad'><strong>Out of reach on the remaining credits</strong>You would need "+fmt(reqC)+"% on your remaining credits to average "+fmt(targetOnly)+"% overall. Consider lowering the target above to find a level that is still achievable.</div>";
+      else v.innerHTML="<div class='verdict "+(reqC<=70?"mid":"hard")+"'><strong>You need "+fmt(reqC)+"% on your remaining credits</strong>That takes your overall average to exactly "+fmt(targetOnly)+"%. Status: "+stC.t.toLowerCase()+".</div>";
+    } else {
+      var focus = level==="ug" ? bestVerdict : null;
+      var firstReq=(70 - doneAvg*doneShare)/remainShare;
+      if(focus){
+        if(focus.req<=0) v.innerHTML="<div class='verdict good'><strong>A 2:1 is already secured 🎉</strong>Your banked marks alone clear 60% overall. Every mark from here is about chasing a First — which needs "+(firstReq<=0?"0% (also secured!)":fmt(firstReq)+"%")+" from here.</div>";
+        else if(focus.req>100) v.innerHTML="<div class='verdict bad'><strong>A 2:1 is out of reach — but don’t give up</strong>It would need "+fmt(focus.req)+"%, above the 100% maximum. Check the table: the highest class still open to you is the realistic target now, and a strong final year still lifts your class.</div>";
+        else v.innerHTML="<div class='verdict "+(focus.req<=70?"mid":"hard")+"'><strong>For a 2:1, you need "+fmt(focus.req)+"% from here</strong>"+(firstReq<=100?" A First is still mathematically open too — it needs "+fmt(firstReq)+"%.":" A First would need "+fmt(firstReq)+"%, so the 2:1 is the target to organise your revision around.")+"</div>";
+      } else {
+        var topReq=firstReq; var stT=statusFor(topReq);
+        v.innerHTML="<div class='verdict "+(topReq<=0?"good":topReq<=70?"mid":topReq<=100?"hard":"bad")+"'><strong>For a Distinction, you need "+(topReq<=0?"0% — already secured":fmt(topReq)+"%")+" from here</strong>Status: "+stT.t.toLowerCase()+". The full breakdown for Merit and Pass is in the table below.</div>";
+      }
+    }
+  }
+
+  calcDegree(); calcYear(); calcModule(); calcNeed();
+})();
+</script>
+</body>
+</html>
